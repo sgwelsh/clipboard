@@ -1,273 +1,301 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hazelwood Fire Department
-  Fire Drill Report</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-    
-    .form-container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 24px;
-      text-transform: uppercase;
-      border-bottom: 2px solid black;
-      padding-bottom: 10px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    
-    input[type="text"],
-    input[type="date"],
-    input[type="time"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-bottom: 1px solid black;
-      font-size: 14px;
-      background: transparent;
-    }
-    
-    .date-time-group {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .date-time-group .form-group {
-      flex: 1;
-    }
-    
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    button {
-      flex: 1;
-      padding: 15px;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    
-    button[type="submit"] {
-      background-color: #0056b3;
-      color: white;
-    }
-    
-    button[type="submit"]:hover {
-      background-color: #004494;
-    }
-    
-    button[type="button"] {
-      background-color: #28a745;
-      color: white;
-    }
-    
-    button[type="button"]:hover {
-      background-color: #218838;
-    }
-    
-    .footer-note {
-      text-align: center;
-      font-size: 12px;
-      color: #666;
-      margin-top: 20px;
-    }
-    
-    .signature-line {
-      border-bottom: 1px solid black;
-      height: 40px;
-    }
-    
-    .timezone-info {
-      font-size: 12px;
-      color: #666;
-      margin-top: 5px;
-    }
-  </style>
-</head>
-<body>
-   <div class="form-container" id="formContent">
-   <h1>Hazelwood Fire Department<br>Fire Drill Report</h1>
-    
-    <form action="https://splitforms.com/api/submit" method="POST" id="drillReportForm">
-      <!-- SplitForms required fields -->
-      <input type="hidden" name="_to" value="sgwelsh@hazelwoodmo.org">
-      <input type="hidden" name="access_key" value="28654fbbc1c740ed94311c50e19351cd">
-      <input type="hidden" name="_subject" value="Monthly Fire Drill Report">
-      
-      <!-- Timezone tracking fields -->
-      <input type="hidden" id="timezone" name="timezone" value="CST">
-      <input type="hidden" id="utc_drill_time" name="utc_drill_time" value="">
-      
-      <div class="form-group">
-        <label for="schoolName">School/Business Name</label>
-        <input type="text" id="schoolName" name="schoolName" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="address">Address</label>
-        <input type="text" id="address" name="address" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="personInCharge">Person in Charge of Drill</label>
-        <input type="text" id="personInCharge" name="personInCharge" required>
-      </div>
-      
-      <div class="date-time-group">
-        <div class="form-group">
-          <label for="drillDate">Date of Drill</label>
-          <input type="date" id="drillDate" name="drillDate" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="drillTime">Time (CST)</label>
-          <input type="time" id="drillTime" name="drillTime" required>
-          <div class="timezone-info" id="timezoneInfo">Please enter time in Central Standard Time</div>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label for="weatherConditions">Weather Conditions at Time of Drill</label>
-        <input type="text" id="weatherConditions" name="weatherConditions">
-      </div>
-      
-      <div class="form-group">
-        <label for="occupantsCount">Number of Occupants Evacuated</label>
-        <input type="number" id="occupantsCount" name="occupantsCount" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="evacuationTime">Total Time for Evacuation (Seconds)</label>
-        <input type="number" id="evacuationTime" name="evacuationTime" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="otherInfo">Other Information Relevant to This Drill</label>
-        <textarea id="otherInfo" name="otherInfo"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="signature">Signature</label>
-        <input type="text" id="signature" name="signature">
-      </div>
-      
-      <div class="button-group">
-        <button type="button" id="generatePdf">Generate PDF</button>
-        <button type="submit">Submit Report</button>
-      </div>
-    </form>
-    
-    <div class="footer-note">
-      Please submit form to Hazelwood Fire Department or email firemarshal@hazelwoodmo.org
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const timezoneField = document.getElementById('timezone');
-      const timezoneInfo = document.getElementById('timezoneInfo');
-      
-      // Set timezone to CST
-      timezoneField.value = 'CST';
-      timezoneInfo.textContent = 'Please enter time in Central Standard Time (CST)';
-      
-      // Update UTC time when form is submitted
-      document.getElementById('drillReportForm').addEventListener('submit', function() {
-        const dateInput = document.getElementById('drillDate').value;
-        const timeInput = document.getElementById('drillTime').value;
-        
-        if (dateInput && timeInput) {
-          // Combine date and time strings as CST
-          const combinedDateTime = new Date(dateInput + 'T' + timeInput + '-06:00');
-          
-          // Convert to UTC
-          const utcDateTime = new Date(combinedDateTime.toISOString());
-          const utcTime = utcDateTime.toTimeString().substring(0, 8);
-          
-          // Store UTC time
-          document.getElementById('utc_drill_time').value = utcTime;
+    <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="hosting-provider" content="Netlify">
+<meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Copy Form Data</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            padding: 2.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #1c1e21;
         }
         
-        return true;
-      });
-
-      // Generate PDF functionality
-      document.getElementById('generatePdf').addEventListener('click', function() {
-        // Hide the buttons temporarily for PDF generation
-        const buttonGroup = document.querySelector('.button-group');
-        const originalDisplay = buttonGroup.style.display;
-        buttonGroup.style.display = 'none';
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4b4f56;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 16px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px #e7f3ff;
+        }
         
-        // Use html2canvas to capture the form
-        html2canvas(document.getElementById('formContent'), {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true
-        }).then(canvas => {
-          // Restore the buttons
-          buttonGroup.style.display = originalDisplay;
-          
-          // Initialize jsPDF
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          
-          // Get dimensions
-          const imgData = canvas.toDataURL('image/png');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          
-          // Add the image to PDF
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-          
-          // Get current date for filename
-          const today = new Date();
-          const dateStr = today.toISOString().split('T')[0];
-          const timeStr = today.toTimeString().split(' ')[0].replace(/:/g, '-');
-          
-          // Save the PDF
-          pdf.save(`FireDrillReport_${dateStr}_${timeStr}.pdf`);
+        /* Styles for the custom autocomplete suggestions */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            background: white;
+            border: 1px solid #dddfe2;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: none; /* Hidden by default */
+        }
+        .suggestions-list.show {
+            display: block;
+        }
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f2f5;
+        }
+        .suggestion-item .delete-btn {
+            color: #888;
+            font-weight: bold;
+            padding: 0 5px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .suggestion-item .delete-btn:hover {
+            background-color: #ddd;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .address-group .form-group {
+            margin-bottom: 0;
+        }
+        .address-group .form-group label {
+            margin-bottom: 0.25rem;
+            font-size: 0.9em;
+        }
+        
+        .address-group .form-group:nth-of-type(1),
+        .address-group .form-group:nth-of-type(2) {
+            flex-basis: 100px;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+
+        .address-group .form-group:last-of-type {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Steve's Filename Clipboard Wizard</h2>
+        
+        <!-- MODIFIED: Name field now also has the autocomplete wrapper -->
+        <div class="form-group autocomplete-wrapper">
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="e.g., John Doe">
+            <ul class="suggestions-list" id="suggestionsList-name"></ul>
+        </div>
+        
+        <div class="address-group">
+            <div class="form-group">
+                <label for="addressNum">Address #</label>
+                <input type="text" id="addressNum" placeholder="123">
+            </div>
+            
+            <div class="form-group">
+                <label for="suiteNum">Suite #</label>
+                <input type="text" id="suiteNum" placeholder="4B">
+            </div>
+
+            <div class="form-group autocomplete-wrapper">
+                <label for="streetName">Street Name</label>
+                <input type="text" id="streetName" placeholder="e.g., Main St.">
+                <ul class="suggestions-list" id="suggestionsList-streetName"></ul>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date">
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note</label>
+            <input type="text" id="note" placeholder="e.g., Optional note">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Define fields that need autocomplete functionality ---
+            // The 'key' is for localStorage, the 'id' is the element ID, and 'starterList' is the initial data.
+            const autocompleteFields = [
+                {
+                    key: 'nameSuggestions',
+                    id: 'name',
+                    starterList: ["John Doe", "Jane Smith", "Peter Jones"]
+                },
+                {
+                    key: 'streetNameSuggestions',
+                    id: 'streetName',
+                    starterList: ["Main Street", "Oak Avenue", "Pine Lane", "Maple Drive", "Cedar Boulevard"]
+                }
+            ];
+
+            // --- Generic Autocomplete Functions ---
+            const getSuggestions = (key, starterList) => {
+                const suggestions = localStorage.getItem(key);
+                return suggestions ? JSON.parse(suggestions) : starterList;
+            };
+
+            const saveSuggestion = (key, value, starterList) => {
+                if (!value) return;
+                let suggestions = getSuggestions(key, starterList);
+                if (!suggestions.includes(value)) {
+                    suggestions.unshift(value);
+                    if (suggestions.length > 20) suggestions = suggestions.slice(0, 20);
+                    localStorage.setItem(key, JSON.stringify(suggestions));
+                }
+            };
+
+            const deleteSuggestion = (key, valueToDelete) => {
+                let suggestions = JSON.parse(localStorage.getItem(key) || '[]');
+                suggestions = suggestions.filter(val => val !== valueToDelete);
+                localStorage.setItem(key, JSON.stringify(suggestions));
+            };
+            
+            const renderSuggestions = (inputElement, listElement, key, starterList, filter = '') => {
+                const suggestions = getSuggestions(key, starterList);
+                const filtered = suggestions.filter(val => val.toLowerCase().includes(filter.toLowerCase()));
+                
+                listElement.innerHTML = '';
+                if (filtered.length > 0) {
+                    listElement.classList.add('show');
+                    filtered.forEach(value => {
+                        const li = document.createElement('li');
+                        li.className = 'suggestion-item';
+                        
+                        const span = document.createElement('span');
+                        span.textContent = value;
+                        
+                        const deleteBtn = document.createElement('span');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = '×';
+                        deleteBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            deleteSuggestion(key, value);
+                            renderSuggestions(inputElement, listElement, key, starterList, inputElement.value);
+                        };
+                        
+                        li.appendChild(span);
+                        li.appendChild(deleteBtn);
+                        
+                        li.onclick = () => {
+                            inputElement.value = value;
+                            listElement.classList.remove('show');
+                            updateClipboard();
+                        };
+                        
+                        listElement.appendChild(li);
+                    });
+                } else {
+                    listElement.classList.remove('show');
+                }
+            };
+
+            // --- Initialization for each autocomplete field ---
+            autocompleteFields.forEach(field => {
+                const inputEl = document.getElementById(field.id);
+                const listEl = document.getElementById(`suggestionsList-${field.id}`);
+
+                inputEl.addEventListener('input', (e) => renderSuggestions(inputEl, listEl, field.key, field.starterList, e.target.value));
+                inputEl.addEventListener('focus', () => renderSuggestions(inputEl, listEl, field.key, field.starterList, inputEl.value));
+                inputEl.addEventListener('blur', () => saveSuggestion(field.key, inputEl.value.trim(), field.starterList));
+            });
+
+            // Hide lists when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.autocomplete-wrapper')) {
+                    document.querySelectorAll('.suggestions-list').forEach(list => list.classList.remove('show'));
+                }
+            });
+
+            // --- Clipboard Logic (unchanged) ---
+            const updateClipboard = async () => {
+                const name = document.getElementById('name').value.trim();
+                const addressNum = document.getElementById('addressNum').value.trim();
+                const suiteNum = document.getElementById('suiteNum').value.trim();
+                const streetName = document.getElementById('streetName').value.trim();
+                const date = document.getElementById('date').value;
+                const note = document.getElementById('note').value.trim();
+                
+                const dataEntries = [name, addressNum, suiteNum, streetName, date, note];
+                const textToCopy = dataEntries.join('_');
+
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    console.log('Clipboard updated!');
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+            };
+
+            // Add listeners to all inputs to update the clipboard
+            document.querySelectorAll('input').forEach(input => {
+                if (input.type !== 'date') { // Date input listener is separate if needed, but 'input' works
+                    input.addEventListener('input', updateClipboard);
+                }
+            });
+            document.getElementById('date').addEventListener('input', updateClipboard);
+
         });
-      });
-    });
-  </script>
+    </script>
+
 </body>
 </html>
