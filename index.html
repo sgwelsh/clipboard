@@ -1,319 +1,629 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
 <!-- This site is hosted on Netlify. Anyone can build and deploy a site
-     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99
+
+     like this one for free: [https://netlify.new/?utm\_campaign=ai-legible\&utm\_source=comment\&utm\_medium=referral\&utm\_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99](https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99)
+
      Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+
 <meta name="hosting-provider" content="Netlify">
-<meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99">
+
+<meta name="netlify-deploy" content="https://netlify.new/?utm\_campaign=ai-legible\&amp;utm\_source=meta\&amp;utm\_medium=referral\&amp;utm\_id=08c6d6bd-7d2c-4695-bd58-62a13cbd3a99">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Auto-Copy Form Data</title>
+
     <style>
+
         body {
+
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 2rem 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            padding: 2.5rem;
-            background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
-            margin: 0 auto;
-            flex: 1;
-        }
-        h2 {
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #1c1e21;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #4b4f56;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 16px;
-            border: 1px solid #dddfe2;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #1877f2;
-            box-shadow: 0 0 0 2px #e7f3ff;
-        }
-        
-        /* Styles for the custom autocomplete suggestions */
-        .autocomplete-wrapper {
-            position: relative;
-        }
-        .suggestions-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            background: white;
-            border: 1px solid #dddfe2;
-            border-top: none;
-            border-radius: 0 0 6px 6px;
-            max-height: 200px;
-            overflow-y: auto;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: none; /* Hidden by default */
-        }
-        .suggestions-list.show {
-            display: block;
-        }
-        .suggestion-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
+
             align-items: center;
-        }
-        .suggestion-item:hover {
+
+            min-height: 100vh;
+
+            margin: 0;
+
+            padding: 2rem 0;
+
             background-color: #f0f2f5;
+
         }
-        .suggestion-item .delete-btn {
-            color: #888;
-            font-weight: bold;
-            padding: 0 5px;
+
+        .container {
+
+            padding: 2.5rem;
+
+            background-color: #ffffff;
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            border-radius: 10px;
+
+            width: 100%;
+
+            max-width: 500px;
+
+            box-sizing: border-box;
+
+        }
+
+        h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 1.5rem;
+
+            text-align: center;
+
+            color: #1c1e21;
+
+        }
+
+       
+
+        .form-group {
+
+            margin-bottom: 1rem;
+
+        }
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 0.5rem;
+
+            font-weight: 600;
+
+            color: #4b4f56;
+
+        }
+
+        .form-group input {
+
+            width: 100%;
+
+            padding: 10px 12px;
+
+            font-size: 16px;
+
+            border: 1px solid #dddfe2;
+
+            border-radius: 6px;
+
+            box-sizing: border-box;
+
+        }
+
+        .form-group input:focus {
+
+            outline: none;
+
+            border-color: #1877f2;
+
+            box-shadow: 0 0 0 2px #e7f3ff;
+
+        }
+
+       
+
+        /* Styles for the custom autocomplete suggestions */
+
+        .autocomplete-wrapper {
+
+            position: relative;
+
+        }
+
+        .suggestions-list {
+
+            position: absolute;
+
+            top: 100%;
+
+            left: 0;
+
+            right: 0;
+
+            z-index: 10;
+
+            background: white;
+
+            border: 1px solid #dddfe2;
+
+            border-top: none;
+
+            border-radius: 0 0 6px 6px;
+
+            max-height: 200px;
+
+            overflow-y: auto;
+
+            list-style: none;
+
+            padding: 0;
+
+            margin: 0;
+
+            display: none; /* Hidden by default */
+
+        }
+
+        .suggestions-list.show {
+
+            display: block;
+
+        }
+
+        .suggestion-item {
+
+            padding: 10px 12px;
+
             cursor: pointer;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+        .suggestion-item:hover {
+
+            background-color: #f0f2f5;
+
+        }
+
+        .suggestion-item .delete-btn {
+
+            color: #888;
+
+            font-weight: bold;
+
+            padding: 0 5px;
+
+            cursor: pointer;
+
             border-radius: 50%;
+
         }
+
         .suggestion-item .delete-btn:hover {
+
             background-color: #ddd;
+
         }
+
+
 
         .address-group {
+
             display: flex;
+
             gap: 10px;
+
             align-items: flex-end;
+
         }
+
         .address-group .form-group {
+
             margin-bottom: 0;
+
         }
+
         .address-group .form-group label {
+
             margin-bottom: 0.25rem;
+
             font-size: 0.9em;
+
         }
-        
+
+       
+
         .address-group .form-group:nth-of-type(1),
+
         .address-group .form-group:nth-of-type(2) {
+
             flex-basis: 100px;
+
             flex-grow: 0;
+
             flex-shrink: 0;
+
         }
+
+
 
         .address-group .form-group:last-of-type {
+
             flex-grow: 1;
+
         }
-        
-        /* Footer container with centered image */
-        .footer-container {
-            text-align: center;
-            padding: 20px 0;
-            width: 100%;
-        }
-        
-        /* Image styling - 10% width, maintaining aspect ratio */
-        .footer-image {
+
+        /* Added styles for the image container */
+
+        .image-container {
+
+            margin-top: 2rem;
+
             width: 10%;
-            height: auto;
-            max-width: 10%;
+
+            text-align: center;
+
         }
+
+        .bottom-image {
+
+            max-width: 100%;
+
+            height: auto;
+
+        }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <div class="container">
-        <h2>HFM Filename Generator</h2>
-        
+
+        <h2>Steve's Filename Clipboard Wizard</h2>
+
+       
+
         <!-- MODIFIED: Name field now also has the autocomplete wrapper -->
+
         <div class="form-group autocomplete-wrapper">
+
             <label for="name">Name</label>
+
             <input type="text" id="name" placeholder="e.g., John Doe">
+
             <ul class="suggestions-list" id="suggestionsList-name"></ul>
+
         </div>
-        
+
+       
+
         <div class="address-group">
+
             <div class="form-group">
+
                 <label for="addressNum">Address #</label>
+
                 <input type="text" id="addressNum" placeholder="123">
+
             </div>
-            
+
+           
+
             <div class="form-group">
+
                 <label for="suiteNum">Suite #</label>
+
                 <input type="text" id="suiteNum" placeholder="4B">
+
             </div>
+
+
 
             <div class="form-group autocomplete-wrapper">
+
                 <label for="streetName">Street Name</label>
+
                 <input type="text" id="streetName" placeholder="e.g., Main St.">
+
                 <ul class="suggestions-list" id="suggestionsList-streetName"></ul>
+
             </div>
+
         </div>
-        
+
+       
+
         <div class="form-group">
+
             <label for="date">Date</label>
+
             <input type="date" id="date">
+
         </div>
+
+
 
         <div class="form-group">
+
             <label for="note">Note</label>
+
             <input type="text" id="note" placeholder="e.g., Optional note">
+
         </div>
+
     </div>
 
-    <div class="footer-container">
-        <img class="footer-image" src="https://github.com/sgwelsh/clipboard/blob/main/VeniceAI_Os8SsvW.png?raw=true" alt="Footer image">
+    <!-- Added image container at the bottom of the page -->
+
+    <div class="image-container">
+
+        <img src="https://github.com/sgwelsh/clipboard/blob/main/VeniceAI_Os8SsvW.png?raw=true" alt="Venice AI" class="bottom-image">
+
     </div>
+
+
 
     <script>
+
         document.addEventListener('DOMContentLoaded', () => {
+
             // --- Define fields that need autocomplete functionality ---
+
             // The 'key' is for localStorage, the 'id' is the element ID, and 'starterList' is the initial data.
+
             const autocompleteFields = [
+
                 {
+
                     key: 'nameSuggestions',
+
                     id: 'name',
+
                     starterList: ["John Doe", "Jane Smith", "Peter Jones"]
+
                 },
+
                 {
+
                     key: 'streetNameSuggestions',
+
                     id: 'streetName',
+
                     starterList: ["Main Street", "Oak Avenue", "Pine Lane", "Maple Drive", "Cedar Boulevard"]
+
                 }
+
             ];
 
+
+
             // --- Generic Autocomplete Functions ---
+
             const getSuggestions = (key, starterList) => {
+
                 const suggestions = localStorage.getItem(key);
+
                 return suggestions ? JSON.parse(suggestions) : starterList;
+
             };
+
+
 
             const saveSuggestion = (key, value, starterList) => {
+
                 if (!value) return;
+
                 let suggestions = getSuggestions(key, starterList);
+
                 if (!suggestions.includes(value)) {
+
                     suggestions.unshift(value);
+
                     if (suggestions.length > 20) suggestions = suggestions.slice(0, 20);
+
                     localStorage.setItem(key, JSON.stringify(suggestions));
+
                 }
+
             };
+
+
 
             const deleteSuggestion = (key, valueToDelete) => {
+
                 let suggestions = JSON.parse(localStorage.getItem(key) || '[]');
+
                 suggestions = suggestions.filter(val => val !== valueToDelete);
+
                 localStorage.setItem(key, JSON.stringify(suggestions));
+
             };
-            
+
+           
+
             const renderSuggestions = (inputElement, listElement, key, starterList, filter = '') => {
+
                 const suggestions = getSuggestions(key, starterList);
+
                 const filtered = suggestions.filter(val => val.toLowerCase().includes(filter.toLowerCase()));
-                
+
+               
+
                 listElement.innerHTML = '';
+
                 if (filtered.length > 0) {
+
                     listElement.classList.add('show');
+
                     filtered.forEach(value => {
+
                         const li = document.createElement('li');
+
                         li.className = 'suggestion-item';
-                        
+
+                       
+
                         const span = document.createElement('span');
+
                         span.textContent = value;
-                        
+
+                       
+
                         const deleteBtn = document.createElement('span');
+
                         deleteBtn.className = 'delete-btn';
+
                         deleteBtn.textContent = '×';
+
                         deleteBtn.onclick = (e) => {
+
                             e.stopPropagation();
+
                             deleteSuggestion(key, value);
+
                             renderSuggestions(inputElement, listElement, key, starterList, inputElement.value);
+
                         };
-                        
+
+                       
+
                         li.appendChild(span);
+
                         li.appendChild(deleteBtn);
-                        
+
+                       
+
                         li.onclick = () => {
+
                             inputElement.value = value;
+
                             listElement.classList.remove('show');
+
                             updateClipboard();
+
                         };
-                        
+
+                       
+
                         listElement.appendChild(li);
+
                     });
+
                 } else {
+
                     listElement.classList.remove('show');
+
                 }
+
             };
+
+
 
             // --- Initialization for each autocomplete field ---
+
             autocompleteFields.forEach(field => {
+
                 const inputEl = document.getElementById(field.id);
+
                 const listEl = document.getElementById(`suggestionsList-${field.id}`);
 
+
+
                 inputEl.addEventListener('input', (e) => renderSuggestions(inputEl, listEl, field.key, field.starterList, e.target.value));
+
                 inputEl.addEventListener('focus', () => renderSuggestions(inputEl, listEl, field.key, field.starterList, inputEl.value));
+
                 inputEl.addEventListener('blur', () => saveSuggestion(field.key, inputEl.value.trim(), field.starterList));
+
             });
+
+
 
             // Hide lists when clicking outside
+
             document.addEventListener('click', (e) => {
+
                 if (!e.target.closest('.autocomplete-wrapper')) {
+
                     document.querySelectorAll('.suggestions-list').forEach(list => list.classList.remove('show'));
+
                 }
+
             });
+
+
 
             // --- Clipboard Logic (unchanged) ---
+
             const updateClipboard = async () => {
+
                 const name = document.getElementById('name').value.trim();
+
                 const addressNum = document.getElementById('addressNum').value.trim();
+
                 const suiteNum = document.getElementById('suiteNum').value.trim();
+
                 const streetName = document.getElementById('streetName').value.trim();
+
                 const date = document.getElementById('date').value;
+
                 const note = document.getElementById('note').value.trim();
-                
+
+               
+
                 const dataEntries = [name, addressNum, suiteNum, streetName, date, note];
+
                 const textToCopy = dataEntries.join('_');
 
+
+
                 try {
+
                     await navigator.clipboard.writeText(textToCopy);
+
                     console.log('Clipboard updated!');
+
                 } catch (err) {
+
                     console.error('Failed to copy text: ', err);
+
                 }
+
             };
 
+
+
             // Add listeners to all inputs to update the clipboard
+
             document.querySelectorAll('input').forEach(input => {
+
                 if (input.type !== 'date') { // Date input listener is separate if needed, but 'input' works
+
                     input.addEventListener('input', updateClipboard);
+
                 }
+
             });
+
             document.getElementById('date').addEventListener('input', updateClipboard);
 
+
+
         });
+
     </script>
+
+
+
 </body>
+
 </html>
